@@ -1,0 +1,51 @@
+<div class="app">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card drop-shadow">
+                    <div class="card-body">
+                        <form action="">
+                            <div class="form-group">
+                                <label for="">Select an image</label>
+                                <input type="file" class="form-control" accept="image/*" (change)='preview($event)'>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Top text</label>
+                                <input type="text" class="form-control" name="topText" [(ngModel)]="topText"
+                                    (keyup)="drawText()">
+                            </div>
+                            <div class="form-group">
+                                <label for="">Bottom text</label>
+                                <input type="text" class="form-control" name="bottomText" [(ngModel)]="bottomText"
+                                    (keyup)="drawText()">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="from-group">
+                                        <label for="">Text color</label>
+                                        <color-chrome (onChangeComplete)='canvasTextColor($event)'></color-chrome>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="from-group">
+                                        <label for="">Background color</label>
+                                        <color-chrome (onChangeComplete)='canvasBgColor($event)'></color-chrome>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-block mt-5" (click)="downloadImg()"
+                                style="width: 100%;">Download</button>
+                                <button (click)="saveImgToLocalStorage()">Save Image to LocalStorage</button>
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <canvas class="drop-shadow" #memeCanvas width="700" height="800" style="background-color: #f9f9fb;">
+                </canvas>
+            </div>
+        </div>
+    </div>
+</div>
