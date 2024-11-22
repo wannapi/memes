@@ -1,15 +1,19 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ColorEvent } from 'ngx-color';
-import { ColorChromeModule } from 'ngx-color/chrome'
+import { ColorChromeModule } from 'ngx-color/chrome';
 import { ImportsModule } from '../prime';
-
+import { PhotoService } from '../service/photo.service';
+import { CloudinaryModule } from '@cloudinary/ng';
+import { HttpClient } from '@angular/common/http';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-generator',
   standalone: true,
-  imports: [ColorChromeModule,FormsModule,ImportsModule],
+  imports: [ColorChromeModule, FormsModule, ImportsModule, CloudinaryModule],
   templateUrl: './generator.component.html',
-  styleUrl: './generator.component.scss'
+  styleUrl: './generator.component.scss',
+  providers: [MessageService],
 })
 export class GeneratorComponent {
   @ViewChild('memeCanvas', { static: false }) myCanvas: any;
@@ -19,18 +23,19 @@ export class GeneratorComponent {
   fileEvent: any;
   textColor: String = '#000000';
   backgroundColor: String = '#F9F9FB';
-
-  constructor() { }
+  currentImage: any;
+  constructor(
+    private photoService: PhotoService,
+    private http: HttpClient,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
+    this.photoService.getImages().subscribe((images) => console.log(images));
   }
 
   preview(e: any) {
     this.fileEvent = e;
-
-    console.log("Preview Function Working");
-    console.log(e);
-
     let canvas = this.myCanvas.nativeElement;
     let ctx = canvas.getContext('2d');
 
@@ -46,8 +51,8 @@ export class GeneratorComponent {
 
       img.onload = function () {
         ctx.drawImage(img, 50, 150, 600, 500);
-      }
-    }
+      };
+    };
   }
 
   drawText() {
@@ -80,38 +85,94 @@ export class GeneratorComponent {
   downloadImg() {
     let canvas = this.myCanvas.nativeElement;
     let image = canvas.toDataURL('image/png');
-    let link = document.createElement('a');
-    link.download = 'memeImg.png';
-    link.href = image;
-    link.click();
+
+    if (image) {
+      let link = document.createElement('a');
+      link.download = 'memeImg.png';
+      link.href = image;
+      link.click();
+      this.showSuccess('Meme téléchargé avec succès !');
+    } else {
+      this.showError('Veuillez selectionner une image');
+    }
   }
 
   saveImgToLocalStorage() {
     const canvas = this.myCanvas.nativeElement;
-    const image = canvas.toDataURL('image/png'); // Convert canvas to Base64 string
-
-    // Save to localStorage
-    localStorage.setItem('savedImage', image);
-
-    // Load the image into the Galleria
-    this.loadGalleriaImages();
-  }
-
-  loadGalleriaImages() {
-    const savedImage = localStorage.getItem('savedImage');
-    if (savedImage) {
-      this.images = [
-        {
-          itemImageSrc: savedImage,
-          thumbnailImageSrc: savedImage,
-          alt: 'Saved Image',
-          title: 'Canvas Image'
-        }
-      ];
+    const image = canvas.toDataURL('image/png');
+    if (image) {
+      this.photoService.createItem(image);
+      this.showSuccess('Meme enregistré avec succès !');
+    } else {
+      this.showError('Veuillez selectionner une image');
     }
   }
 
-  images: any[] = []; // Galleria images
-  
+  share(media : string) {
+    let canvas = this.myCanvas.nativeElement;
+    let image = canvas.toDataURL('image/png');
 
+    if (image) {
+      const formData = new FormData();
+      formData.append('file', image); // Send the base64 string as 'file'
+      formData.append('upload_preset', 'gpimcicl');
+
+      const cloudinaryUrl =
+        'https://api.cloudinary.com/v1_1/dyxhuswdu/image/upload'; // Replace with your Cloudinary cloud name
+
+      this.http.post<any>(cloudinaryUrl, formData).subscribe(
+        (response) => {
+          if (response.secure_url) {
+            const uploadedImageUrl = response.secure_url; // Get the URL of the uploaded image
+            console.log('Uploaded Image URL: ', uploadedImageUrl);
+            this.shareToMedia(media,uploadedImageUrl);
+          }
+        },
+        (error) => {
+          console.error('Upload error:', error);
+        }
+      );
+    } else {
+      this.showError('Veuillez selectionner une image');
+    }
+
+    //this.uploadBase64ToCloudinary(image);
+  }
+  shareToMedia(media:string,imageUrl: string) {
+    if(media == 'facebook'){
+      const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        imageUrl
+      )}`;
+  
+      // Open the share dialog in a new window
+      window.open(facebookShareUrl, '_blank', 'width=600,height=400');
+    } else if (media == ('twitter')){
+      const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+        imageUrl
+      )}&text=${encodeURIComponent('Check out this image!')}`;
+      window.open(twitterShareUrl, '_blank', 'width=600,height=400');
+    } else {
+      const linkedInShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+        imageUrl
+      )}`;
+      window.open(linkedInShareUrl, '_blank', 'width=600,height=400');
+    }
+  
+  }
+
+  showSuccess(message: string) {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: message,
+    });
+  }
+
+  showError(message: string) {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: message,
+    });
+  }
 }

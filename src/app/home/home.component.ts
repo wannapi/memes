@@ -1,62 +1,42 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import {
+  GalleryItem,
+  GalleryModule,
+  IframeItem,
+  ImageItem,
+  VideoItem,
+  YoutubeItem,
+} from 'ng-gallery';
 import { ButtonModule } from 'primeng/button';
 import { ImportsModule } from '../prime';
-import { PhotoService } from '../service/photo.service';
-
-
-
-
-
-
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ButtonModule,ImportsModule],
+  imports: [ButtonModule, ImportsModule, GalleryModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
-
-  
+  styleUrl: './home.component.scss',
 })
 export class HomeComponent {
-  
+  images: any;
+  images2: GalleryItem[] = [];
+  constructor(private router: Router) {}
 
-
-  imageSrc: string | null = null;
-  texts: { value: string, x: number, y: number }[] = [];
-  selectedText: { value: string, x: number, y: number } | null = null;
-
-  
-
-  images: any[] | undefined;
-    
-    responsiveOptions: any[] | undefined;
-
-    constructor(private photoService: PhotoService) {}
-
-    ngOnInit() {
-        this.photoService.getImages().then((images) => (this.images = images));
-        this.loadGalleriaImages()
-        this.responsiveOptions = [
-            {
-                breakpoint: '1024px',
-                numVisible: 5
-            },
-            {
-                breakpoint: '768px',
-                numVisible: 3
-            },
-            {
-                breakpoint: '560px',
-                numVisible: 1
-            }
-        ];
+  ngOnInit() {
+    const savedImages = JSON.parse(localStorage.getItem('images') || '[]');
+    this.images = savedImages;
+    if(this.images.length){
+      console.log(this.images[0].itemImageSrc);
+      this.images.forEach((element: any) => {
+        this.images2.push(new ImageItem({
+          src:element.itemImageSrc,
+          thumb: element.itemImageSrc
+        }))
+      });
     }
+  }
 
-    loadGalleriaImages() {
-      const savedImage = localStorage.getItem('savedImage');
-      if (savedImage) {
-        this.images?.push(savedImage)
-      }
-    }
+  goToGenerator() {
+    this.router.navigate(['/generator']);
+  }
 }
-

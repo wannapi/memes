@@ -20,10 +20,17 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@cloudinary/ng": "^2.1.1",
+    "@cloudinary/url-gen": "^1.21.0",
+    "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.6",
+    "cloudinary": "^2.5.1",
     "fabric": "^6.5.1",
+    "font-awesome": "^4.7.0",
+    "ng-gallery": "^12.0.0-beta.4",
     "ngx-color": "^9.0.0",
+    "ngx-gallery": "^5.10.0",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
     "primeng": "^17.18.12",
@@ -33,6 +40,7 @@
     "zone.js": "~0.14.10"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^18.0.0",
     "@angular-devkit/build-angular": "^18.2.10",
     "@angular/cli": "^18.2.10",
     "@angular/compiler-cli": "^18.2.0",
@@ -43,6 +51,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "process": "^0.11.10",
     "typescript": "~5.5.2"
   }
 }
