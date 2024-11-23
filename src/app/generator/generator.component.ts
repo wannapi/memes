@@ -7,6 +7,7 @@ import { PhotoService } from '../service/photo.service';
 import { CloudinaryModule } from '@cloudinary/ng';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
+
 @Component({
   selector: 'app-generator',
   standalone: true,
@@ -114,16 +115,16 @@ export class GeneratorComponent {
 
     if (image) {
       const formData = new FormData();
-      formData.append('file', image); // Send the base64 string as 'file'
+      formData.append('file', image);
       formData.append('upload_preset', 'gpimcicl');
 
       const cloudinaryUrl =
-        'https://api.cloudinary.com/v1_1/dyxhuswdu/image/upload'; // Replace with your Cloudinary cloud name
+        'https://api.cloudinary.com/v1_1/dyxhuswdu/image/upload'; 
 
       this.http.post<any>(cloudinaryUrl, formData).subscribe(
         (response) => {
           if (response.secure_url) {
-            const uploadedImageUrl = response.secure_url; // Get the URL of the uploaded image
+            const uploadedImageUrl = response.secure_url;
             console.log('Uploaded Image URL: ', uploadedImageUrl);
             this.shareToMedia(media,uploadedImageUrl);
           }
@@ -136,7 +137,7 @@ export class GeneratorComponent {
       this.showError('Veuillez selectionner une image');
     }
 
-    //this.uploadBase64ToCloudinary(image);
+ 
   }
   shareToMedia(media:string,imageUrl: string) {
     if(media == 'facebook'){
