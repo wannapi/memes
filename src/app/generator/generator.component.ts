@@ -145,7 +145,7 @@ export class GeneratorComponent {
         imageUrl
       )}`;
   
-      // Open the share dialog in a new window
+      
       window.open(facebookShareUrl, '_blank', 'width=600,height=400');
     } else if (media == ('twitter')){
       const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
